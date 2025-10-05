@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Polllyakk.TaskPlanner.Domain.Logic\Polllyakk.TaskPlanner.Domain.Logic.csproj" />
+    <ProjectReference Include="..\Polllyakk.TaskPlanner.Domain.Models\Polllyakk.TaskPlanner.Domain.Models.csproj" />
+  </ItemGroup>
+
+</Project>
