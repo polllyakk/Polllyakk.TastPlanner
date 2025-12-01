@@ -1,64 +1,122 @@
-﻿using System;
-using System.Collections.Generic;
-using Polllyakk.TaskPlanner.Domain.Logic;
-using Polllyakk.TaskPlanner.Domain.Models.Enums;
+﻿using Polllyakk.TaskPlanner.Domain.Logic;
 using Polllyakk.TaskPlanner.Domain.Models;
+using Polllyakk.TaskPlanner.Domain.Models.Enums;
+using Pollyakk.TaskPlanner.DataAccess.Abstractions;
+using System;
 
 
-internal static class Program
+class Program
 {
-    public static void Main(string[] args)
+    static void Main()
     {
-        var items = new List<WorkItem>();
-
-        Console.WriteLine("=== Task Planner ===");
+        IWorkItemsRepository repo = new FileWorkItemsRepository();
+        var planner = new SimpleTaskPlanner(repo);
 
         while (true)
         {
-            Console.Write("Enter task title (or empty to finish): ");
-            string? title = Console.ReadLine();
-            if (string.IsNullOrWhiteSpace(title))
-                break;
+            Console.WriteLine("\nChoose operation:");
+            Console.WriteLine("[A] Add work item");
+            Console.WriteLine("[B] Build a plan");
+            Console.WriteLine("[M] Mark item as completed");
+            Console.WriteLine("[R] Remove work item");
+            Console.WriteLine("[Q] Quit");
+            Console.Write("Enter: ");
+            var key = Console.ReadKey().Key;
+            Console.WriteLine();
 
-            Console.Write("Enter description: ");
-            string description = Console.ReadLine() ?? "";
-
-            Console.Write("Enter due date (dd.MM.yyyy): ");
-            DateTime dueDate = DateTime.Parse(Console.ReadLine() ?? DateTime.Now.ToString());
-
-            Console.Write("Enter priority (None, Low, Medium, High, Urgent): ");
-            Priority priority = Enum.Parse<Priority>(Console.ReadLine() ?? "None", true);
-
-            Console.Write("Enter complexity (None, Minutes, Hours, Days, Weeks): ");
-            Complexity complexity = Enum.Parse<Complexity>(Console.ReadLine() ?? "None", true);
-
-            items.Add(new WorkItem
+            switch (key)
             {
-                Title = title,
-                Description = description,
-                CreationDate = DateTime.Now,
-                DueDate = dueDate,
-                Priority = priority,
-                Complexity = complexity,
-                IsCompleted = false
-            });
+                case ConsoleKey.A:
+                    AddWorkItem(repo);
+                    break;
 
-            Console.WriteLine("Task added!\n");
+                case ConsoleKey.B:
+                    BuildPlan(planner);
+                    break;
+
+                case ConsoleKey.M:
+                    MarkCompleted(repo);
+                    break;
+
+                case ConsoleKey.R:
+                    RemoveWorkItem(repo);
+                    break;
+
+                case ConsoleKey.Q:
+                    repo.SaveChanges();
+                    return;
+            }
         }
+    }
 
-        if (items.Count == 0)
+    static void AddWorkItem(IWorkItemsRepository repo)
+    {
+        Console.Write("Title: ");
+        string title = Console.ReadLine();
+
+        Console.Write("Description: ");
+        string desc = Console.ReadLine();
+
+        Console.Write("Duration (hours): ");
+        int hours = int.Parse(Console.ReadLine());
+
+        Console.Write("Priority (1=high): ");
+        int prio = int.Parse(Console.ReadLine());
+
+        var item = new WorkItem
         {
-            Console.WriteLine("No tasks entered.");
+            Title = title,
+            Description = desc,
+            DurationHours = hours,
+            Priority = (Priority)prio,
+            IsCompleted = false
+        };
+
+        repo.Add(item);
+        repo.SaveChanges();
+
+        Console.WriteLine("Added!");
+    }
+
+    static void BuildPlan(SimpleTaskPlanner planner)
+    {
+        var plan = planner.CreatePlan();
+
+        Console.WriteLine("\nPLAN:");
+        foreach (var item in plan)
+            Console.WriteLine($"{item.Title} ({item.DurationHours}h, priority {item.Priority})");
+    }
+
+    static void MarkCompleted(IWorkItemsRepository repo)
+    {
+        Console.Write("Enter item ID: ");
+        Guid id = Guid.Parse(Console.ReadLine());
+
+        var item = repo.Get(id);
+        if (item == null)
+        {
+            Console.WriteLine("Not found!");
             return;
         }
 
-        var planner = new SimpleTaskPlanner();
-        var plan = planner.CreatePlan(items.ToArray());
+        item.IsCompleted = true;
+        repo.Update(item);
+        repo.SaveChanges();
 
-        Console.WriteLine("\n=== Sorted Plan ===");
-        foreach (var item in plan)
-        {
-            Console.WriteLine(item.ToString());
-        }
+        Console.WriteLine("Marked completed.");
+    }
+
+    static void RemoveWorkItem(IWorkItemsRepository repo)
+    {
+        Console.Write("Enter item ID: ");
+        Guid id = Guid.Parse(Console.ReadLine());
+
+        if (repo.Remove(id))
+            Console.WriteLine("Removed.");
+        else
+            Console.WriteLine("Not found.");
+
+        repo.SaveChanges();
     }
 }
+

@@ -8,8 +8,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Polllyakk.TaskPlanner.Domain.Models\Polllyakk.TaskPlanner.Domain.Models.csproj" />
-    <ProjectReference Include="..\Pollyakk.TaskPlanner.DataAccess.Abstractions\Pollyakk.TaskPlanner.DataAccess.Abstractions.csproj" />
-    <ProjectReference Include="..\Pollyakk.TaskPlanner.DataAccess\Pollyakk.TaskPlanner.DataAccess.csproj" />
   </ItemGroup>
 
 </Project>

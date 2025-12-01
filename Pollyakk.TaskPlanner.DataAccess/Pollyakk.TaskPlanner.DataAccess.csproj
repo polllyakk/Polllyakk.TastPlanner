@@ -1,17 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Polllyakk.TaskPlanner.Domain.Logic\Polllyakk.TaskPlanner.Domain.Logic.csproj" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Polllyakk.TaskPlanner.Domain.Models\Polllyakk.TaskPlanner.Domain.Models.csproj" />
     <ProjectReference Include="..\Pollyakk.TaskPlanner.DataAccess.Abstractions\Pollyakk.TaskPlanner.DataAccess.Abstractions.csproj" />
-    <ProjectReference Include="..\Pollyakk.TaskPlanner.DataAccess\Pollyakk.TaskPlanner.DataAccess.csproj" />
   </ItemGroup>
 
 </Project>

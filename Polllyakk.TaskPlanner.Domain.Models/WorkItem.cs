@@ -6,6 +6,9 @@ namespace Polllyakk.TaskPlanner.Domain.Models
 {
     public class WorkItem
     {
+        public Guid Id { get; set; } = Guid.NewGuid(); // додано
+        public int DurationHours { get; set; }         // додано
+
         public DateTime CreationDate { get; set; }
         public DateTime DueDate { get; set; }
         public Priority Priority { get; set; }
@@ -14,9 +17,10 @@ namespace Polllyakk.TaskPlanner.Domain.Models
         public string Description { get; set; } = string.Empty;
         public bool IsCompleted { get; set; }
 
+        public WorkItem Clone() => (WorkItem)this.MemberwiseClone(); // додано
+
         public override string ToString()
         {
             return $"{Title}: due {DueDate:dd.MM.yyyy}, {Priority.ToString().ToLower()} priority";
         }
     }
-}
